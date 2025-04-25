@@ -1,34 +1,40 @@
 Bootstrap: docker
-From: python:3.10-slim
+From: python:3.11.10-slim-bookworm
 
-%labels
-    Author YourName
-    Version v1.0
-
-%files
-    . /opt/myproject
-
-%post
-    apt-get update && apt-get install -y \
-        git \
-        wget \
-        curl \
-        unzip \
-        libglib2.0-0 \
-        libsm6 \
-        libxext6 \
-        libxrender-dev \
-        && apt-get clean \
-        && rm -rf /var/lib/apt/lists/*
-
-    pip install --upgrade pip
-    cd /opt/myproject
-    pip install -r requirements.txt
-
+# Set environment variables
 %environment
-    export LC_ALL=C
     export PYTHONUNBUFFERED=1
+    export PYTHONDONTWRITEBYTECODE=1
+    export PIP_NO_CACHE_DIR=1
+    export PIP_BREAK_SYSTEM_PACKAGES=1
+
+# Downloads to user config dir
+%post
+    curl -L https://github.com/ultralytics/assets/releases/download/v0.0.0/Arial.ttf -o /root/.config/Ultralytics/Arial.ttf
+    curl -L https://github.com/ultralytics/assets/releases/download/v0.0.0/Arial.Unicode.ttf -o /root/.config/Ultralytics/Arial.Unicode.ttf
+
+    # Install required Linux packages
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3-pip git zip unzip wget curl htop libgl1 libglib2.0-0 libpython3-dev gnupg g++ libusb-1.0-0 default-jre && \
+    rm -rf /var/lib/apt/lists/*
+
+    # Install Python packages
+    pip install uv
+    uv pip install --system -e ".[export]" --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match
+    uv pip install --system numpy==1.26.4
+
+    # Download YOLO model
+    curl -L https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt -o /ultralytics/yolo11n.pt
+
+    # Export YOLO models
+    yolo export model=/ultralytics/yolo11n.pt format=edgetpu imgsz=32
+    yolo export model=/ultralytics/yolo11n.pt format=ncnn imgsz=32
+    yolo export model=/ultralytics/yolov8n.pt format=imx imgsz=32
+    uv pip install --system paddlepaddle x2paddle
+
+    # Clean up
+    rm -rf /ultralytics/tmp /root/.config/Ultralytics/persistent_cache.json
 
 %runscript
-    echo "YOLO + Transformers container ready 🚀"
     exec "$@"
