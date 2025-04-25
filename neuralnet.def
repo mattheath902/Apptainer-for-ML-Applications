@@ -1,20 +1,30 @@
-# Use the official Python 3.10 slim image as the base
-FROM python:3.10-slim
+# Apptainer Definition File
+
+# Use the Python 3.10 slim image as the base
+From: python:3.10-slim
 
 # Metadata
-LABEL author="YourName" \
-      version="v1.0"
+%labels
+    Author: YourName
+    Version: v1.0
 
 # Copy the project files into the container
-COPY . /opt/myproject
+%files
+    . /opt/myproject
 
-# Run the necessary installation steps
-RUN apt-get update && apt-get install -y \
+# Post-build commands
+%post
+    apt-get update && apt-get install -y \
         git \
         wget \
         curl \
         unzip \
         python3-pip \
+        git \
+        zip \
+        unzip \
+        wget \
+        curl \
         htop \
         libgl1 \
         libglib2.0-0 \
@@ -26,17 +36,16 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip to the latest version
-RUN pip install --upgrade pip
-
-# Install Python dependencies from requirements.txt
-WORKDIR /opt/myproject
-RUN pip install -r requirements.txt
+    pip install --upgrade pip
+    cd /opt/myproject
+    pip install -r requirements.txt
 
 # Set environment variables
-ENV LC_ALL=C
-ENV PYTHONUNBUFFERED=1
+%environment
+    export LC_ALL=C
+    export PYTHONUNBUFFERED=1
 
-# Default command to run when the container starts
-ENTRYPOINT ["echo", "YOLO + Transformers container ready 🚀"]
-CMD ["bash"]
+# Run script (default execution)
+%runscript
+    echo "YOLO + Transformers container ready 🚀"
+    exec "$@"
