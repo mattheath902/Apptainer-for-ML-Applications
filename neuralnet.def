@@ -1,31 +1,42 @@
-Bootstrap: docker
-From: python:3.10-slim
+# Use the official Python 3.10 slim image as the base
+FROM python:3.10-slim
 
-%labels
-    Author YourName
-    Version v1.0
+# Metadata
+LABEL author="YourName" \
+      version="v1.0"
 
-%files
-    . /opt/myproject
+# Copy the project files into the container
+COPY . /opt/myproject
 
-%post
-    apt-get update && apt-get install -y \
+# Run the necessary installation steps
+RUN apt-get update && apt-get install -y \
         git \
         wget \
         curl \
         unzip \
-        python3-pip git zip unzip wget curl htop libgl1 libglib2.0-0 libpython3-dev gnupg g++ libusb-1.0-0 default-jre
-        && apt-get clean \
-        && rm -rf /var/lib/apt/lists/*
+        python3-pip \
+        htop \
+        libgl1 \
+        libglib2.0-0 \
+        libpython3-dev \
+        gnupg \
+        g++ \
+        libusb-1.0-0 \
+        default-jre \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-    pip install --upgrade pip
-    cd /opt/myproject
-    pip install -r requirements.txt
+# Upgrade pip to the latest version
+RUN pip install --upgrade pip
 
-%environment
-    export LC_ALL=C
-    export PYTHONUNBUFFERED=1
+# Install Python dependencies from requirements.txt
+WORKDIR /opt/myproject
+RUN pip install -r requirements.txt
 
-%runscript
-    echo "YOLO + Transformers container ready 🚀"
-    exec "$@"
+# Set environment variables
+ENV LC_ALL=C
+ENV PYTHONUNBUFFERED=1
+
+# Default command to run when the container starts
+ENTRYPOINT ["echo", "YOLO + Transformers container ready 🚀"]
+CMD ["bash"]
