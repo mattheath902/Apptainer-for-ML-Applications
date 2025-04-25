@@ -1,17 +1,12 @@
-# Apptainer Definition File
-
-# Use the Python 3.10 slim image as the base
+Bootstrap: docker
 From: python:3.10-slim
 
-# Metadata
 %labels
-    Author: YourName
-    Version: v1.0
+    Author YourName
+    Version v1.0
 
-# Copy the project files into the container
 %files
     . /opt/myproject
-
 # Post-build commands
 %post
     apt-get update && apt-get install -y \
