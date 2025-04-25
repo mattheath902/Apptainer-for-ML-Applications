@@ -1,39 +1,33 @@
 Bootstrap: docker
 From: python:3.10-slim
 
+%labels
+    Author YourName
+    Version v1.0
+
+%files
+    requirements.txt /tmp/requirements.txt
+
 %post
     apt-get update && apt-get install -y \
         git \
+        wget \
         curl \
-        vim \
-        build-essential \
-        cmake \
-        libgl1 \
+        unzip \
         libglib2.0-0 \
-        libgtk2.0-dev \
-        libavcodec-dev \
-        libavformat-dev \
-        libswscale-dev \
-        libxvidcore-dev \
-        libx264-dev \
-        libjpeg-dev \
-        libpng-dev \
-        libtiff-dev \
+        libsm6 \
+        libxext6 \
+        libxrender-dev \
+        && apt-get clean \
         && rm -rf /var/lib/apt/lists/*
-    
+
     pip install --upgrade pip
-    pip install numpy opencv-python
+    pip install -r /tmp/requirements.txt
 
 %environment
+    export LC_ALL=C
     export PYTHONUNBUFFERED=1
-    export LC_ALL=C.UTF-8
-    export LANG=C.UTF-8
-
-%labels
-    Author 
-    Project Apptainer-ML-OpenCV
 
 %runscript
-    echo "Starting ML App with NumPy and OpenCV"
-    exec python "$@"
-
+    echo "YOLO + Transformers container ready 🚀"
+    exec "$@"
