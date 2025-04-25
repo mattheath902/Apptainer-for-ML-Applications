@@ -6,7 +6,7 @@ From: python:3.10-slim
     Version v1.0
 
 %files
-    requirements.txt /tmp/requirements.txt
+    . /opt/myproject
 
 %post
     apt-get update && apt-get install -y \
@@ -22,7 +22,8 @@ From: python:3.10-slim
         && rm -rf /var/lib/apt/lists/*
 
     pip install --upgrade pip
-    pip install -r /tmp/requirements.txt
+    cd /opt/myproject
+    pip install -r requirements.txt
 
 %environment
     export LC_ALL=C
