@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
+From: python:3.10-slim
 
 %post
     apt-get update && apt-get install -y \
@@ -8,7 +8,7 @@ From: pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
         vim \
         && rm -rf /var/lib/apt/lists/*
     pip install --upgrade pip
-    pip install numpy pandas matplotlib scikit-learn
+    pip install numpy opencv-python
 
 %environment
     export PYTHONUNBUFFERED=1
@@ -16,9 +16,9 @@ From: pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
     export LANG=C.UTF-8
 
 %labels
-    Author YourName
-    Project NeuralNetProject
+    Author 
+    Project Apptainer-ML-OpenCV
 
 %runscript
-    echo "Starting Neural Net Project"
+    echo "Starting ML App with NumPy and OpenCV"
     exec python "$@"
