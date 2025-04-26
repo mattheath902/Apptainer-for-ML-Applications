@@ -1,3 +1,7 @@
+# Disclaimer
+
+Since this container includes all the necessary dependencies to run the model, it requires a significant amount of storage—approximately 8 GB. NCSU provides students with 20 GB of allocated space, so you may need to free up some disk space if you plan to build or run this container on university machines.
+
 # Apptainer YOLOv8 Example
 
 This repository shows how to containerize and deploy an existing machine learning model using [Apptainer](https://apptainer.org/) on NCSU's infrastructure. It's intended as a reference for students looking to create reproducible environments—especially on NCSU systems where sudo access and personal installations are restricted.
